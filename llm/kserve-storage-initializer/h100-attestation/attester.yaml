@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: attestation-h100
+  labels:
+    app: attestation-h100
+spec:
+  runtimeClassName: kata-remote
+  containers:
+    - name: attestation-h100
+      image: quay.io/eesposit/h100-attestation
+      imagePullPolicy: Always
+      env:
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: "all"
+      securityContext:
+        privileged: true
+        runAsNonRoot: false
+        runAsUser: 0

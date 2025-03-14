@@ -1,0 +1,14 @@
+NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+
+Current driver version: NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
+tar: local_gpu_verifier.tar: Funktion open fehlgeschlagen: Datei oder Verzeichnis nicht gefunden
+tar: Error is not recoverable: exiting now
+~/openshift/test-drive/llm/kserve-storage-initializer/h100-attestation ~/openshift/test-drive/llm/kserve-storage-initializer/h100-attestation
+Open verifier folder successfully!
+sudo: apt: Befehl nicht gefunden
+Requirement already satisfied: pip in /usr/lib/python3.12/site-packages (23.2.1)
+Collecting pip
+  Obtaining dependency information for pip from https://files.pythonhosted.org/packages/d4/55/90db48d85f7689ec6f81c0db0622d704306c5284850383c090e6c7195a5c/pip-24.2-py3-none-any.whl.metadata
+  Downloading pip-24.2-py3-none-any.whl.metadata (3.6 kB)
+Downloading pip-24.2-py3-none-any.whl (1.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.8/1.8 MB 11.3 MB/s eta 0:00:00
