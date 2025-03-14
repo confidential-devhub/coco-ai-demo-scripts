@@ -1,0 +1,9 @@
+:experimental:
+:source-highlighter: highlightjs
+:deliverable: workshop
+//:deliverable: tutorial
+:productname-long: Red Hat OpenShift AI
+:productname-short: OpenShift AI
+:org-name: Red Hat
+
+// the :git-version: attribute value is defined at the top of the importing-files-into-jupyter.adoc file so that it is re-used downstream
