@@ -43,10 +43,10 @@ spec:
 ```
 3. Openshift Sandboxed Containers installed with CoCo enabled
 4. Trustee operator installed
-5. Trustee operator has to contain a key stored as a Secret. The storage initializer running in the model will perform attestation to get the key defined in the env `KBS_PATH`, but otherwise it will default to `kbsres1/key.bin`. The `KBS_PATH` env simply defines `secret/file_name`, so `kbsres1/key.bin` simply means secret called `kbsres1` which has `key.bin` as content.
-
+5. Trustee operator has to contain a key called `key.bin` stored as a Secret called `fraud-detection`. If you want to change the secret or key file name, you also need to build your own kserve-storage-initializer by using the code in `../kserve-storage-initializer`.
 
 ## Deployment step by step
+
 To better understand and try one thing at the time, we will deploy
 
 1. The fraud detection demo as-is
@@ -109,19 +109,4 @@ storageInitializer: |-
         "image" : "quay.io/eesposit/kserve-storage-initializer:latest
 ```
 
-Once the fraud-detection demo as-is is fully running, try modifying the InferenceService:
-```
-oc edit inferenceservices/<your-model-name> -n <your-project-name>
-```
-
-And add the following (assumes that `kata-remote` is already present from the previous step):
-```
-spec:
-  predictor:
-    model:
-      env:
-        - name: KBS_PATH
-          value: <secret_name>/<key_name>
-```
-
-A new deployment should be created in <your-project-name> ns, and you will see that the pod is running with the new storage intializer.
+Then restart the fraud-detection model server deployment in <your-project-name> ns, and you will see that the pod is running with the new storage intializer.

@@ -21,10 +21,10 @@ echo ""
 
 echo "#######################################"
 ./download-model $SRC $DEST
-echo ""
 echo "#######################################"
+echo ""
 
-KBS_PATH=${KBS_PATH:-"kbsres1/key.bin"}
+KBS_PATH=${KBS_PATH:-"fraud-detection/key.bin"}
 echo "KBS_PATH: $KBS_PATH"
 echo ""
 
