@@ -4,7 +4,6 @@ USER 0
 
 WORKDIR /storage-initializer/scripts
 
-# RUN curl -L https://dl.fedoraproject.org/pub/fedora/linux/releases/41/Everything/x86_64/os/Packages/o/openssl-3.2.2-9.fc41.x86_64.rpm -o openssl-3.2.2-9.fc41.x86_64.rpm
 RUN microdnf install -y openssl
 
 RUN mkdir keys && chmod 777 keys

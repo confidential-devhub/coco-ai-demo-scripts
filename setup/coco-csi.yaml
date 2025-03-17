@@ -1,0 +1,21 @@
+apiVersion: "serving.kserve.io/v1alpha1"
+kind: ClusterStorageContainer
+metadata:
+  name: coco-storage-initializer
+spec:
+  container:
+    name: storage-initializer
+    image: quay.io/eesposit/kserve-storage-initializer:latest
+    env:
+      - name: MODEL_ENCRYPTED # wether to decrypt the model or not
+        value: true
+      - name: MODEL_DECRYPTION_KEY # path to the secret/file in Trustee
+        value: secret/key_file
+      - name: MODEL_NAME # name of the model, without format
+        value: model
+      - name: MODEL_FORMAT # format of the model
+        value: onnx
+  supportedUriFormats:
+    - prefix: gs://
+    - prefix: s3://
+    - regex: "https?://(.+)/(.+)"

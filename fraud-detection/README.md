@@ -5,45 +5,10 @@ This folder hast to be download and used in parallel with the original fraud-det
 ## Prerequisites
 
 1. Openshift AI, Openshift Service Mesh and Openshift Serverless installed
-2. Openshift AI DataScienceCluster set up to enable Kserve. Example:
-```apiVersion: datasciencecluster.opendatahub.io/v1
-kind: DataScienceCluster
-metadata:
-  name: rhods
-  labels:
-	app.kubernetes.io/name: datasciencecluster
-	app.kubernetes.io/instance: rhods
-	app.kubernetes.io/part-of: rhods-operator
-	app.kubernetes.io/managed-by: kustomize
-	app.kubernetes.io/created-by: rhods-operator
-spec:
-  components:
-	codeflare:
-  	managementState: Managed
-	dashboard:
-  	managementState: Managed
-	datasciencepipelines:
-  	managementState: Managed
-	kserve:
-  	serving:
-    	ingressGateway:
-      	certificate:
-        	type: SelfSigned
-    	managementState: Managed
-    	name: knative-serving
-  	managementState: Managed
-	modelmeshserving:
-  	managementState: Managed
-	ray:
-  	managementState: Managed
-	trustyai:
-  	managementState: Managed
-	workbenches:
-  	managementState: Managed
-```
+2. Openshift AI DataScienceCluster set up to enable Kserve. An example is located in `../setup/oai-datasciencecluster.yaml`
 3. Openshift Sandboxed Containers installed with CoCo enabled
 4. Trustee operator installed
-5. Trustee operator has to contain a key called `key.bin` stored as a Secret called `fraud-detection`. If you want to change the secret or key file name, you also need to build your own kserve-storage-initializer by using the code in `../kserve-storage-initializer`.
+5. Trustee operator has to contain a key stored as a Secret (and the key has to be added in `KbsConfig`). The storage initializer running in the model will perform attestation to get the key defined in the env `MODEL_DECRYPTION_KEY`, but otherwise it will default to `fraud-detection/key.bin`. The `MODEL_DECRYPTION_KEY` env simply defines `secret/file_name`, so `fraud-detection/key.bin` simply means secret called `fraud-detection` which has `key.bin` as content.
 
 ## Deployment step by step
 
@@ -76,12 +41,6 @@ data:
   kubernetes.podspec-runtimeclassname: enabled
 ```
 
-Optional for this example but higly recommended: delete the plaintext model uploaded in the minio storage.
-
-Then, run `1b_encrypt_model.ipynb` provided in this folder, to encrypt the model.
-
-Run again `fraud-detection/2_save_model.ipynb`, to be sure the encrypted model is uploaded.
-
 Once the fraud-detection demo as-is is fully running, try modifying the InferenceService:
 ```
 oc edit inferenceservices/<your-model-name> -n <your-project-name>
@@ -98,15 +57,18 @@ A new deployment should be created in <your-project-name> ns, and you will see t
 
 ### Add attestation
 
-Now add the custom kserve storage initializer to be able to pull an encrypted model
-```
-oc edit configmaps/inferenceservice-config -n redhat-ods-applications
-```
-And change the storage-initializer to either the default storage-initializer, or a custom one you can build in `../kserve-storage-initialzer`
-```
-storageInitializer: |-
-    {
-        "image" : "quay.io/eesposit/kserve-storage-initializer:latest
-```
+Optional for this example but higly recommended: delete the plaintext model uploaded in the minio storage.
+
+Then, run `1b_encrypt_model.ipynb` provided in this folder, to encrypt the model.
+
+Run again `fraud-detection/2_save_model.ipynb`, to be sure the encrypted model is uploaded.
+
+Now, we need to change the `kserve-storage-initializer`. This is an init container in Kserve that takes care of downloading the model from the remote storage and putting it in a specific directory in the container, so that the main container can find it and run it.
+
+Because the model is now encrypted, we need to extend the kserve-storage-initializer to know how to fetch the key from Trustee, and how to decrypt the model.
+
+In order to change the default initializer, we need to create a `ClusterStorageContainer`. In this container, we specify which storage initializer image to use, and which Uri formats we want to replace. An example of `ClusterStorageContainer` is in `../setup/coco-csi.yaml`. Modify that file as needed, specifying the env variables to match the chosen secret in trustee, type of model and so on.
+
+The provided `ClusterStorageContainer` refers to the pre-built `quay.io/eesposit/kserve-storage-initializer:latest` image. If you want to create your own, refer to `../kserve-storage-initializer`. Note that the way `supportedUriFormats` inside the CSC is set, any model fetched from `gs`, `s3` and `http*` will use that storage initializer.
 
 Then restart the fraud-detection model server deployment in <your-project-name> ns, and you will see that the pod is running with the new storage intializer.

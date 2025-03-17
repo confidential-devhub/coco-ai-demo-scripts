@@ -1,11 +1,16 @@
 #! /bin/bash
 
 set -e
+# variables provided via ClusterStorageContainer
+MODEL_ENCRYPTED=${MODEL_ENCRYPTED:-true} # wether to decrypt the model or not
+MODEL_DECRYPTION_KEY=${MODEL_DECRYPTION_KEY:-"fraud-detection/key.bin"} # path to the secret/file in Trustee
+MODEL_NAME=${MODEL_NAME:-"model"} # name of the model, without format
+MODEL_FORMAT=${MODEL_FORMAT:-"onnx"} # format of the model
 
 SRC=$1
 DEST=$2
 MODEL_F=${DEST}/1
-MODEL_FILE=$MODEL_F/model.onnx
+MODEL_FILE=$MODEL_F/$MODEL_NAME.$MODEL_FORMAT
 MODEL_FILE_ENC=$MODEL_FILE.enc
 
 KEY_FOLDER=keys
@@ -22,8 +27,11 @@ echo "#######################################"
 echo "#######################################"
 echo ""
 
-KBS_PATH=${KBS_PATH:-"fraud-detection/key.bin"}
-echo "KBS_PATH: $KBS_PATH"
+if ! $MODEL_ENCRYPTED 2> /dev/null; then
+    exit 0
+fi
+
+echo "MODEL_DECRYPTION_KEY: $MODEL_DECRYPTION_KEY"
 echo ""
 
 # export S3_VERIFY_SSL=0
@@ -37,7 +45,7 @@ ls -R $KEY_FOLDER
 echo ""
 
 echo "Downloading the key:"
-# curl -L http://127.0.0.1:8006/cdh/resource/default/$KBS_PATH -o $KEY_FILE
+# curl -L http://127.0.0.1:8006/cdh/resource/default/$MODEL_DECRYPTION_KEY -o $KEY_FILE
 curl -L https://people.redhat.com/eesposit/key.bin -o $KEY_FILE
 
 ls -R $KEY_FOLDER
