@@ -1,6 +1,6 @@
 # fraud-detection
 
-This folder hast to be download and used in parallel with the original fraud-detection guide, <https://github.com/rh-aiservices-bu/fraud-detection>, as it extends it.
+This folder hast to be download and used in parallel with the original test-drive guide, <https://github.com/rh-aiservices-bu/test-drive.git>, as it extends it.
 
 ## Prerequisites
 
@@ -14,13 +14,15 @@ This folder hast to be download and used in parallel with the original fraud-det
 
 To better understand and try one thing at the time, we will deploy
 
-1. The fraud detection demo as-is
-2. The fraud detection in CoCo with plaintext model
-3. The fraud detection in CoCo with encrypted model (attestation)
+1. The demo as-is
+2. The demo in CoCo with plaintext model
+3. The demo in CoCo with encrypted model (attestation)
 
 ### Run the demo as-is
 
-Follow this workshop Instructions: <https://rh-aiservices-bu.github.io/fraud-detection/>. Skip point 5. Data Science Pipelines and 6. Distributed Training.
+Follow this workshop Instructions: <https://rh-aiservices-bu.github.io/rhoai-rh1-testdrive/modules/llm/index.html>.
+
+In case the "Text Generation Inference Service" serving runtime is missing in the Openshift AI web ui, proceed to pick "TGIS Standalone ServingRuntime for Kserve".
 
 #### Note:
 If you get SSL connection errors when deploying the pod, then you need to disable SSL.
@@ -59,9 +61,7 @@ A new deployment should be created in <your-project-name> ns, and you will see t
 
 Optional for this example but higly recommended: delete the plaintext model uploaded in the minio storage.
 
-Then, run `1b_encrypt_model.ipynb` provided in this folder, to encrypt the model. This file requires that `fraud-detection` original demo repo has also been cloned in the workbench.
-
-Run again `fraud-detection/2_save_model.ipynb`, to be sure the encrypted model is uploaded.
+Then, run `1b_encrypt_model.ipynb` provided in this folder, to encrypt the model. This file requires that `test-drive` original demo repo has also been cloned in the workbench.
 
 Now, we need to change the `kserve-storage-initializer`. This is an init container in Kserve that takes care of downloading the model from the remote storage and putting it in a specific directory in the container, so that the main container can find it and run it.
 
@@ -77,17 +77,17 @@ For this example, use the following variables:
       - name: MODEL_DECRYPTION_KEY # path to the secret/file in Trustee
         value: "secret/key_file" # TODO: insert your own value!
       - name: MODEL_NAME # name of the model, without format
-        value: "model"
+        value: "flan-t5-small"
       - name: MODEL_FORMAT # format of the model
-        value: "onnx"
+        value: "tar.gz"
 ```
 
-The provided `ClusterStorageContainer` refers to the pre-built `quay.io/eesposit/kserve-storage-initializer:latest` image. If you want to create your own, refer to[coco-kserve-storage-initializer](https://github.com/confidential-devhub/coco-kserve-storage-initializer). Note that the way `supportedUriFormats` inside the CSC is set, any model fetched from `s3` will use that storage initializer.
+The provided `ClusterStorageContainer` refers to the pre-built `quay.io/eesposit/kserve-storage-initializer:latest` image. If you want to create your own, refer to [coco-kserve-storage-initializer](https://github.com/confidential-devhub/coco-kserve-storage-initializer). Note that the way `supportedUriFormats` inside the CSC is set, any model fetched from `s3` will use that storage initializer.
 
-If you want this `ClusterStorageContainer` to only refer the specific `models/flan-t5-small` bucket, then change `supportedUriFormats` to point only to that:
+If you want this `ClusterStorageContainer` to only refer the specific `models/frauf` bucket, then change `supportedUriFormats` to point only to that:
 ```
   supportedUriFormats:
-    - prefix: 's3://my-storage/models/flan-t5-small'
+    - prefix: 's3://my-storage/models/fraud'
 ```
 
 Then restart the fraud-detection model server deployment in <your-project-name> ns, and you will see that the pod is running with the new storage intializer.

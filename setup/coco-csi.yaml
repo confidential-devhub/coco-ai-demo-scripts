@@ -16,6 +16,6 @@ spec:
       - name: MODEL_FORMAT # format of the model
         value: "onnx"
   supportedUriFormats:
-    - prefix: gs://
+    # - prefix: gs://
     - prefix: s3://
-    - regex: "https?://(.+)/(.+)"
+    # - regex: "https?://(.+)/(.+)"
