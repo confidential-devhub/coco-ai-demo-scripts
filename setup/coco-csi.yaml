@@ -8,13 +8,13 @@ spec:
     image: quay.io/eesposit/kserve-storage-initializer:latest
     env:
       - name: MODEL_ENCRYPTED # wether to decrypt the model or not
-        value: true
+        value: "true"
       - name: MODEL_DECRYPTION_KEY # path to the secret/file in Trustee
-        value: secret/key_file
+        value: "secret/key_file"
       - name: MODEL_NAME # name of the model, without format
-        value: model
+        value: "model"
       - name: MODEL_FORMAT # format of the model
-        value: onnx
+        value: "onnx"
   supportedUriFormats:
     - prefix: gs://
     - prefix: s3://

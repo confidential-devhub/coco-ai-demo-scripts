@@ -5,7 +5,7 @@ This folder hast to be download and used in parallel with the original fraud-det
 ## Prerequisites
 
 1. Openshift AI, Openshift Service Mesh and Openshift Serverless installed
-2. Openshift AI DataScienceCluster set up to enable Kserve. An example is located in `../setup/oai-datasciencecluster.yaml`
+2. Openshift AI DataScienceCluster set up to enable Kserve. An example is located in `../setup/oai-datasciencecluster.yaml`. Official guide is here: https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.13/html-single/serving_models/index#about-the-single-model-serving-platform_serving-large-models
 3. Openshift Sandboxed Containers installed with CoCo enabled
 4. Trustee operator installed
 5. Trustee operator has to contain a key stored as a Secret (and the key has to be added in `KbsConfig`). The storage initializer running in the model will perform attestation to get the key defined in the env `MODEL_DECRYPTION_KEY`, but otherwise it will default to `fraud-detection/key.bin`. The `MODEL_DECRYPTION_KEY` env simply defines `secret/file_name`, so `fraud-detection/key.bin` simply means secret called `fraud-detection` which has `key.bin` as content.

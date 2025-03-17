@@ -45,14 +45,15 @@ ls -R $KEY_FOLDER
 echo ""
 
 echo "Downloading the key:"
-# curl -L http://127.0.0.1:8006/cdh/resource/default/$MODEL_DECRYPTION_KEY -o $KEY_FILE
-curl -L https://people.redhat.com/eesposit/key.bin -o $KEY_FILE
+curl -L http://127.0.0.1:8006/cdh/resource/default/$MODEL_DECRYPTION_KEY -o $KEY_FILE
 
 ls -R $KEY_FOLDER
 echo ""
 
 echo "Decrypting model:"
 openssl enc -d -aes-256-cbc -pbkdf2 -kfile $KEY_FILE -in $MODEL_FILE_ENC -out $MODEL_FILE
+echo "Decription completed!"
+echo ""
 
 ls -R $DEST
 echo ""
