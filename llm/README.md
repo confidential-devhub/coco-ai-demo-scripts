@@ -82,7 +82,7 @@ For this example, use the following variables:
         value: "tar.gz"
 ```
 
-The provided `ClusterStorageContainer` refers to the pre-built `quay.io/eesposit/kserve-storage-initializer:latest` image. If you want to create your own, refer to [coco-kserve-storage-initializer](https://github.com/confidential-devhub/coco-kserve-storage-initializer). Note that the way `supportedUriFormats` inside the CSC is set, any model fetched from `s3` will use that storage initializer.
+The provided `ClusterStorageContainer` refers to the pre-built `quay.io/eesposit/kserve-storage-initializer:latest` image. If you want to create your own, refer to the[coco-kserve-storage-initializer](https://github.com/confidential-devhub/coco-kserve-storage-initializer). Note that the way `supportedUriFormats` inside the CSC is set, any model fetched from `s3` will use that storage initializer.
 
 If you want this `ClusterStorageContainer` to only refer the specific `models/frauf` bucket, then change `supportedUriFormats` to point only to that:
 ```

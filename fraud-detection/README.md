@@ -82,12 +82,12 @@ For this example, use the following variables:
         value: "onnx"
 ```
 
-The provided `ClusterStorageContainer` refers to the pre-built `quay.io/eesposit/kserve-storage-initializer:latest` image. If you want to create your own, refer to[coco-kserve-storage-initializer](https://github.com/confidential-devhub/coco-kserve-storage-initializer). Note that the way `supportedUriFormats` inside the CSC is set, any model fetched from `s3` will use that storage initializer.
+The provided `ClusterStorageContainer` refers to the pre-built `quay.io/eesposit/kserve-storage-initializer:latest` image. If you want to create your own, refer to the [coco-kserve-storage-initializer](https://github.com/confidential-devhub/coco-kserve-storage-initializer). Note that the way `supportedUriFormats` inside the CSC is set, any model fetched from `s3` will use that storage initializer.
 
-If you want this `ClusterStorageContainer` to only refer the specific `models/flan-t5-small` bucket, then change `supportedUriFormats` to point only to that:
+If you want this `ClusterStorageContainer` to only refer the specific `models/fraud` bucket, then change `supportedUriFormats` to point only to that:
 ```
   supportedUriFormats:
-    - prefix: 's3://my-storage/models/flan-t5-small'
+    - prefix: 's3://my-storage/models/fraud'
 ```
 
 Then restart the fraud-detection model server deployment in <your-project-name> ns, and you will see that the pod is running with the new storage intializer.
