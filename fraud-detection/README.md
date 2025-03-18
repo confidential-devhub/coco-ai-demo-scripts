@@ -8,7 +8,7 @@ This folder hast to be download and used in parallel with the original fraud-det
 2. Openshift AI DataScienceCluster set up to enable Kserve. The goal is that when deploying a model server, the "Single model server" option is available. An example is located in `../setup/oai-datasciencecluster.yaml`. Official guide is here: https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.13/html-single/serving_models/index#about-the-single-model-serving-platform_serving-large-models
 3. Openshift Sandboxed Containers installed with CoCo enabled
 4. Trustee operator installed
-5. Trustee operator has to contain a key stored as a Secret (and the key has to be added in `KbsConfig`). The storage initializer running in the model will perform attestation to get the key defined in the env `MODEL_DECRYPTION_KEY`, but otherwise it will default to `kbsres1/key1`. The `MODEL_DECRYPTION_KEY` env simply defines `secret/file_name`, so `kbsres1/key1` simply means secret called `kbsres1` which has `key1` as content.
+5. Trustee operator has to contain a key stored as a Secret (and the key has to be added in `KbsConfig`). The storage initializer running in the model will perform attestation to get the key defined in the env `MODEL_DECRYPTION_KEY`, but otherwise it will default to `model-keys/model-name.key`. The `MODEL_DECRYPTION_KEY` env simply defines `secret/file_name`, so `model-keys/model-name.key` simply means secret called `model-keys` which has `model-name.key` as content.
 
 ## Deployment step by step
 
@@ -82,7 +82,7 @@ For this example, use the following variables:
         value: "onnx"
 ```
 
-The provided `ClusterStorageContainer` refers to the pre-built `quay.io/eesposit/kserve-storage-initializer:latest` image. If you want to create your own, refer to the [coco-kserve-storage-initializer](https://github.com/confidential-devhub/coco-kserve-storage-initializer). Note that the way `supportedUriFormats` inside the CSC is set, any model fetched from `s3` will use that storage initializer.
+The provided `ClusterStorageContainer` refers to the pre-built `quay.io/eesposit/kserve-storage-initializer:latest` image. If you want to create your own, refer to the [confidential-devhub kserve-storage-initializer](https://github.com/confidential-devhub/kserve.git). Note that the way `supportedUriFormats` inside the CSC is set, any model fetched from `s3` will use that storage initializer.
 
 If you want this `ClusterStorageContainer` to only refer the specific `models/fraud` bucket, then change `supportedUriFormats` to point only to that:
 ```
