@@ -87,7 +87,7 @@ The provided `ClusterStorageContainer` refers to the pre-built `quay.io/eesposit
 If you want this `ClusterStorageContainer` to only refer the specific `models/frauf` bucket, then change `supportedUriFormats` to point only to that:
 ```
   supportedUriFormats:
-    - prefix: 's3://my-storage/models/fraud'
+    - prefix: 's3://my-storage/models/flan-t5-small'
 ```
 
 Then restart the llm model server deployment in <your-project-name> ns, and you will see that the pod is running with the new storage intializer.
