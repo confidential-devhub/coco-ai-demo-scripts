@@ -1,14 +1,14 @@
-# fraud-detection
+# LLM
 
 This folder hast to be download and used in parallel with the original test-drive guide, <https://github.com/rh-aiservices-bu/test-drive.git>, as it extends it.
 
 ## Prerequisites
 
 1. Openshift AI, Openshift Service Mesh and Openshift Serverless installed
-2. Openshift AI DataScienceCluster set up to enable Kserve. An example is located in `../setup/oai-datasciencecluster.yaml`. Official guide is here: https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.13/html-single/serving_models/index#about-the-single-model-serving-platform_serving-large-models
+2. Openshift AI DataScienceCluster set up to enable Kserve. The goal is that when deploying a model server, the "Single model server" option is available. An example is located in `../setup/oai-datasciencecluster.yaml`. Official guide is here: https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2.13/html-single/serving_models/index#about-the-single-model-serving-platform_serving-large-models
 3. Openshift Sandboxed Containers installed with CoCo enabled
 4. Trustee operator installed
-5. Trustee operator has to contain a key stored as a Secret (and the key has to be added in `KbsConfig`). The storage initializer running in the model will perform attestation to get the key defined in the env `MODEL_DECRYPTION_KEY`, but otherwise it will default to `fraud-detection/key.bin`. The `MODEL_DECRYPTION_KEY` env simply defines `secret/file_name`, so `fraud-detection/key.bin` simply means secret called `fraud-detection` which has `key.bin` as content.
+5. Trustee operator has to contain a key stored as a Secret (and the key has to be added in `KbsConfig`). The storage initializer running in the model will perform attestation to get the key defined in the env `MODEL_DECRYPTION_KEY`, but otherwise it will default to `kbsres1/key1`. The `MODEL_DECRYPTION_KEY` env simply defines `secret/file_name`, so `kbsres1/key1` simply means secret called `kbsres1` which has `key1` file as content.
 
 ## Deployment step by step
 
@@ -27,8 +27,8 @@ In case the "Text Generation Inference Service" serving runtime is missing in th
 #### Note:
 If you get SSL connection errors when deploying the pod, then you need to disable SSL.
 
-1. Write down your project name (example `fraud-detection`)
-2. If you plan to change the yaml (not using the web UI): Convert the following template string in `base64`: `http://minio.<project-name>.svc.cluster.local:9000` (example `base64` for http://minio.fraud-detection.svc.cluster.local:9000 is `aHR0cDovL21pbmlvLmZyYXVkLWRldGVjdGlvbi5zdmMuY2x1c3Rlci5sb2NhbDo5MDAw`)
+1. Write down your project name (example `llm`)
+2. If you plan to change the yaml (not using the web UI): Convert the following template string in `base64`: `http://minio.<project-name>.svc.cluster.local:9000` (example `base64` for http://minio.llm.svc.cluster.local:9000 is `aHR0cDovL21pbmlvLmxsbS5zdmMuY2x1c3Rlci5sb2NhbDo5MDAwCg==`)
 3. In the web UI go in namespace <project name> and in secrets/aws-connection-my-storage and then do `Edit` and change `AWS_S3_ENDPOINT` to be your string obtained in the previous step. If you edit the yaml, you need to add the `base64` version of the url, otherwise in the web ui you can also add the plain text.
 
 ### Run the plain text model in a confidential container
@@ -43,7 +43,7 @@ data:
   kubernetes.podspec-runtimeclassname: enabled
 ```
 
-Once the fraud-detection demo as-is is fully running, try modifying the InferenceService:
+Once the lmm demo as-is is fully running, try modifying the InferenceService:
 ```
 oc edit inferenceservices/<your-model-name> -n <your-project-name>
 ```
@@ -90,4 +90,4 @@ If you want this `ClusterStorageContainer` to only refer the specific `models/fr
     - prefix: 's3://my-storage/models/fraud'
 ```
 
-Then restart the fraud-detection model server deployment in <your-project-name> ns, and you will see that the pod is running with the new storage intializer.
+Then restart the llm model server deployment in <your-project-name> ns, and you will see that the pod is running with the new storage intializer.
