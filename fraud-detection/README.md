@@ -82,7 +82,7 @@ For this example, use the following variables:
         value: "onnx"
 ```
 
-The provided `ClusterStorageContainer` refers to the pre-built `quay.io/eesposit/kserve-storage-initializer:latest` image. If you want to create your own, refer to the [confidential-devhub kserve-storage-initializer](https://github.com/confidential-devhub/kserve.git). Note that the way `supportedUriFormats` inside the CSC is set, any model fetched from `s3` will use that storage initializer.
+The provided `ClusterStorageContainer` refers to the pre-built `quay.io/confidential-devhub/coco-storage-initializer:rhoai-2.16` image. If you want to create your own, refer to the [confidential-devhub kserve-storage-initializer](https://github.com/confidential-devhub/kserve/blob/coco-v0.12.1/python/storage-initializer.Dockerfile). Note that the way `supportedUriFormats` inside the CSC is set, any model fetched from `s3` will use that storage initializer.
 
 If you want this `ClusterStorageContainer` to only refer the specific `models/fraud` bucket, then change `supportedUriFormats` to point only to that:
 ```

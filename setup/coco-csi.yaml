@@ -5,7 +5,7 @@ metadata:
 spec:
   container:
     name: storage-initializer
-    image: quay.io/eesposit/kserve-storage-initializer:latest
+    image: quay.io/confidential-devhub/coco-storage-initializer:rhoai-2.16
     env:
       - name: MODEL_ENCRYPTED # wether to decrypt the model or not
         value: "true"
