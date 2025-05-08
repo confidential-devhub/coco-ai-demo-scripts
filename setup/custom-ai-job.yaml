@@ -1,0 +1,102 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: osc-podvm-image-creation
+  namespace: openshift-sandboxed-containers-operator
+spec:
+  parallelism: 1
+  completions: 1
+  backoffLimit: 1
+  template:
+    metadata:
+      name: osc-podvm-image-creation
+    spec:
+      # Add initContainers to pull the image from the registry and copy
+      # /podvm-binaries.tar.gz /payload/podvm-binaries.tar.gz
+      initContainers:
+        - name: copy
+          image: registry.redhat.io/openshift-sandboxed-containers/osc-podvm-payload-rhel9:1.9.0  ## OSC_VERSION
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Copying the payload files"
+              cp /podvm-binaries.tar.gz /payload/podvm-binaries.tar.gz || exit 1
+              echo "Copied the payload files successfully"
+          volumeMounts:
+            - name: payload
+              mountPath: /payload
+      containers:
+        - name: create
+          # Binaries like kubectl, packer and yq are expected to be under /usr/local/bin
+          # podvm binaries are expected to be under /payload/podvm-binaries.tar.gz
+          image: quay.io/confidential-devhub/coco-ai-podvm:latest
+          # This image contains the following
+          # azure-podvm-image-handler.sh script under /scripts/azure-podvm-image-handler.sh
+          # aws-podvm-image-handler.sh script under /scripts/aws-podvm-image-handler.sh
+          # gcp-podvm-image-handler.sh script under /scripts/gcp-podvm-image-handler.sh
+          # sources for cloud-api-adaptor under /src/cloud-api-adaptor
+          lifecycle: 
+            preStop: 
+              exec: 
+                command: ["/scripts/packer-resource-cleanup.sh"]
+          securityContext: # TODO: evaluate if these are actually needed
+            privileged: true
+            allowPrivilegeEscalation: true
+            runAsNonRoot: false
+            seLinuxOptions:
+              type: unconfined_t
+            capabilities:
+             allow:
+               - ALL
+            runAsUser: 0 # needed for container mode dnf access
+          envFrom:
+            - secretRef:
+                name: peer-pods-secret
+            - secretRef:
+                name: peer-pods-image-creation-secret # must come after peer-pods-secret to override the values
+                optional: true
+            - configMapRef:
+                name: peer-pods-cm
+                optional: true
+            - configMapRef:
+                name: azure-podvm-image-cm
+                optional: true
+            - configMapRef:
+                name: aws-podvm-image-cm
+                optional: true
+            - configMapRef:
+                name: gcp-podvm-image-cm
+                optional: true
+            - configMapRef:
+                name: libvirt-podvm-image-cm
+                optional: true
+          command: ["/podvm-builder.sh", "create"]
+          volumeMounts:
+            - name: payload
+              mountPath: /payload
+            - name: regauth
+              mountPath: /tmp/regauth
+            - name: ssh-key-secret
+              mountPath: "/root/.ssh/"
+              readOnly: true
+            - name: store-volume
+              mountPath: /store
+      # Default is 30s which is too less for the preStop hook to fully execute        
+      terminationGracePeriodSeconds: 180
+      volumes:
+        - name: payload
+          emptyDir: {}
+        - name: regauth
+          secret:
+            secretName: auth-json-secret
+        - name: ssh-key-secret
+          secret:
+            secretName: ssh-key-secret
+            items:
+            - key: id_rsa
+              path: "id_rsa"
+            defaultMode: 0400
+            optional: true
+        - name: store-volume
+          emptyDir: {}
+      restartPolicy: Never
